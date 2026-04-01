@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base target="_self">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Community Issue Reporting System</title>
+    <meta name="description" content="Report and track community issues like electricity faults, water leaks, potholes, and waste collection problems">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#2563eb",
+                        secondary: "#1e40af",
+                        accent: "#10b981",
+                        warning: "#f59e0b",
+                        danger: "#ef4444",
+                        pending: "#fbbf24",
+                        inprogress: "#3b82f6",
+                        resolved: "#10b981"
+                    },
+                    fontFamily: {
+                        'poppins': ['Poppins', 'sans-serif'],
+                        'roboto': ['Roboto', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6, .font-heading {
+            font-family: 'Poppins', sans-serif;
+        }
+        .status-pending { background-color: #fef3c7; color: #92400e; }
+        .status-inprogress { background-color: #dbeafe; color: #1e40af; }
+        .status-resolved { background-color: #d1fae5; color: #065f46; }
+        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .form-input:focus { box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        .page-transition { transition: opacity 0.3s ease-in-out; }
+        .hidden-page { display: none; opacity: 0; }
+        .visible-page { display: block; opacity: 1; }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header/Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-10">
+        <nav class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <div class="bg-primary p-2 rounded-lg">
+                        <i class="fas fa-home text-white text-xl"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-800 font-heading">Community<span class="text-primary">Report</span></h1>
+                </div>
+                
+                <div class="flex items-center space-x-1">
+                    <button id="menu-toggle" class="md:hidden text-gray-600 hover:text-primary">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    <ul id="nav-list" class="hidden md:flex space-x-6"></ul>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div id="user-info" class="hidden flex items-center space-x-2">
+                        <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-semibold" id="user-avatar">U</div>
+                        <span id="username-display" class="text-gray-700 font-medium"></span>
+                    </div>
+                    <div id="auth-buttons" class="flex space-x-2">
+                        <button id="login-btn" class="px-4 py-2 text-primary font-medium hover:bg-blue-50 rounded-lg">Log In</button>
+                        <button id="register-btn" class="px-4 py-2 bg-primary text-white font-medium rounded-lg hover:bg-secondary">Register</button>
+                    </div>
+                    <button id="logout-btn" class="hidden px-4 py-2 text-gray-600 hover:text-danger font-medium">Log Out</button>
+                </div>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-2">
+                <ul id="mobile-nav-list" class="space-y-2"></ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area - Pages will be shown/hidden here -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Home Page -->
+        <section id="home-page" class="page-transition visible-page">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-12">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4 font-heading">Welcome to Smart Community Issue Reporting</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">Report and track community issues like electricity faults, water leaks, potholes, and waste collection problems. Help make our community better together.</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                    <div class="bg-white rounded-xl p-6 card-shadow text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-bolt text-2xl text-primary"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Electricity Issues</h3>
+                        <p class="text-gray-600">Report power outages, street light faults, and electrical hazards</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 card-shadow text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-tint text-2xl text-accent"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Water Problems</h3>
+                        <p class="text-gray-600">Report leaks, low water pressure, and drainage issues</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 card-shadow text-center">
+                        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-trash-alt text-2xl text-warning"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Waste Collection</h3>
+                        <p class="text-gray-600">Report missed collections, overflowing bins, and illegal dumping</p>
+                    </div>
+                    
+                    <div class="bg-white rounded-xl p-6 card-shadow text-center">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-road text-2xl text-danger"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Road & Potholes</h3>
+                        <p class="text-gray-600">Report potholes, damaged roads, and traffic safety concerns</p>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-r from-primary to-secondary rounded-2xl p-8 text-white mb-12">
+                    <div class="max-w-3xl mx-auto text-center">
+                        <h3 class="text-3xl font-bold mb-4 font-heading">How It Works</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
+                            <div class="flex flex-col items-center">
+                                <div class="w-12 h-12 bg-white text-primary rounded-full flex items-center justify-center text-xl font-bold mb-4">1</div>
+                                <h4 class="text-xl font-bold mb-2">Register & Log In</h4>
+                                <p>Create an account or log in to start reporting issues</p>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-12 h-12 bg-white text-primary rounded-full flex items-center justify-center text-xl font-bold mb-4">2</div>
+                                <h4 class="text-xl font-bold mb-2">Report an Issue</h4>
+                                <p>Fill out the form with issue details and location</p>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-12 h-12 bg-white text-primary rounded-full flex items-center justify-center text-xl font-bold mb-4">3</div>
+                                <h4 class="text-xl font-bold mb-2">Track Progress</h4>
+                                <p>Monitor the status of your reports from submission to resolution</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button id="get-started-btn" class="px-8 py-3 bg-primary text-white font-bold rounded-lg hover:bg-secondary text-lg">Get Started Now</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Report Issue Page -->
+        <section id="report-page" class="page-transition hidden-page">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2 font-heading">Report a Community Issue</h2>
+                <p class="text-gray-600 mb-8">Fill out the form below to report an issue in your community. Please provide as much detail as possible.</p>
+                
+                <div class="bg-white rounded-xl p-6 card-shadow">
+                    <form id="issue-form">
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Issue Category</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="category-buttons"></div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="issue-title" class="block text-gray-700 font-medium mb-2">Issue Title</label>
+                            <input type="text" id="issue-title" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="Brief description of the issue" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="issue-description" class="block text-gray-700 font-medium mb-2">Detailed Description</label>
+                            <textarea id="issue-description" rows="4" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="Please provide detailed information about the issue..." required></textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="issue-location" class="block text-gray-700 font-medium mb-2">Location</label>
+                                <input type="text" id="issue-location" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="Street address or landmark" required>
+                            </div>
+                            <div>
+                                <label for="issue-priority" class="block text-gray-700 font-medium mb-2">Priority Level</label>
+                                <select id="issue-priority" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary">
+                                    <option value="low">Low - Minor inconvenience</option>
+                                    <option value="medium" selected>Medium - Needs attention</option>
+                                    <option value="high">High - Safety hazard</option>
+                                    <option value="urgent">Urgent - Immediate danger</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Upload Photo (Optional)</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                                <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                <p class="text-gray-500">Drag and drop or <span class="text-primary cursor-pointer">browse</span> to upload</p>
+                                <p class="text-sm text-gray-400 mt-1">Supports JPG, PNG up to 5MB</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center">
+                            <button type="button" id="cancel-report" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50">Cancel</button>
+                            <button type="submit" class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-secondary">Submit Report</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- View Issues Page -->
+        <section id="issues-page" class="page-transition hidden-page">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                    <div>
+                        <h2 class="text-3xl font-bold text-gray-800 mb-2 font-heading">Reported Issues</h2>
+                        <p class="text-gray-600">Track the status of issues reported in your community</p>
+                    </div>
+                    
+                    <div class="mt-4 md:mt-0 flex space-x-3">
+                        <div class="relative">
+                            <select id="filter-status" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary appearance-none bg-white pr-8">
+                                <option value="all">All Statuses</option>
+                                <option value="pending">Pending</option>
+                                <option value="inprogress">In Progress</option>
+                                <option value="resolved">Resolved</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="relative">
+                            <select id="filter-category" class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-primary appearance-none bg-white pr-8">
+                                <option value="all">All Categories</option>
+                                <option value="electricity">Electricity</option>
+                                <option value="water">Water</option>
+                                <option value="waste">Waste</option>
+                                <option value="potholes">Potholes</option>
+                            </select>
+                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="issues-container" class="space-y-6">
+                    <!-- Issues will be dynamically inserted here -->
+                </div>
+                
+                <div id="no-issues-message" class="hidden text-center py-12">
+                    <div class="max-w-md mx-auto">
+                        <i class="fas fa-clipboard-list text-5xl text-gray-300 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-700 mb-2">No Issues Found</h3>
+                        <p class="text-gray-500 mb-6">There are no issues to display. Try changing your filters or report a new issue.</p>
+                        <button id="report-first-issue" class="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-secondary">Report Your First Issue</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Login Page -->
+        <section id="login-page" class="page-transition hidden-page">
+            <div class="max-w-md mx-auto">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center font-heading">Log In to Your Account</h2>
+                <p class="text-gray-600 mb-8 text-center">Access your reports and track issue status</p>
+                
+                <div class="bg-white rounded-xl p-8 card-shadow">
+                    <form id="login-form">
+                        <div class="mb-6">
+                            <label for="login-email" class="block text-gray-700 font-medium mb-2">Email Address</label>
+                            <input type="email" id="login-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="you@example.com" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="login-password" class="block text-gray-700 font-medium mb-2">Password</label>
+                            <input type="password" id="login-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="Enter your password" required>
+                        </div>
+                        
+                        <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="remember-me" class="h-4 w-4 text-primary rounded focus:ring-primary border-gray-300">
+                                <label for="remember-me" class="ml-2 text-gray-700">Remember me</label>
+                            </div>
+                            <a href="#" class="text-primary hover:text-secondary font-medium">Forgot password?</a>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-secondary mb-4">Log In</button>
+                        
+                        <div class="text-center">
+                            <p class="text-gray-600">Don't have an account? <button type="button" id="go-to-register" class="text-primary hover:text-secondary font-medium">Register here</button></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Register Page -->
+        <section id="register-page" class="page-transition hidden-page">
+            <div class="max-w-md mx-auto">
+                <h2 class="text-3xl font-bold text-gray-800 mb-2 text-center font-heading">Create Your Account</h2>
+                <p class="text-gray-600 mb-8 text-center">Join the community and start reporting issues</p>
+                
+                <div class="bg-white rounded-xl p-8 card-shadow">
+                    <form id="register-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label for="register-firstname" class="block text-gray-700 font-medium mb-2">First Name</label>
+                                <input type="text" id="register-firstname" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="John" required>
+                            </div>
+                            <div>
+                                <label for="register-lastname" class="block text-gray-700 font-medium mb-2">Last Name</label>
+                                <input type="text" id="register-lastname" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="Doe" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="register-email" class="block text-gray-700 font-medium mb-2">Email Address</label>
+                            <input type="email" id="register-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="you@example.com" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="register-password" class="block text-gray-700 font-medium mb-2">Password</label>
+                            <input type="password" id="register-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="Create a strong password" required>
+                            <p class="text-sm text-gray-500 mt-1">Must be at least 8 characters with letters and numbers</p>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="register-confirm-password" class="block text-gray-700 font-medium mb-2">Confirm Password</label>
+                            <input type="password" id="register-confirm-password" class="w-full px-4 py-3 border border-gray-300 rounded-lg form-input focus:outline-none focus:border-primary" placeholder="Confirm your password" required>
+                        </div>
+                        
+                        <div class="mb-6">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="accept-terms" class="h-4 w-4 text-primary rounded focus:ring-primary border-gray-300" required>
+                                <label for="accept-terms" class="ml-2 text-gray-700">I agree to the <a href="#" class="text-primary hover:text-secondary">Terms of Service</a> and <a href="#" class="text-primary hover:text-secondary">Privacy Policy</a></label>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="w-full py-3 bg-primary text-white font-medium rounded-lg hover:bg-secondary mb-4">Create Account</button>
+                        
+                        <div class="text-center">
+                            <p class="text-gray-600">Already have an account? <button type="button" id="go-to-login" class="text-primary hover:text-secondary font-medium">Log in here</button></p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Success/Feedback Messages -->
+        <div id="success-message" class="fixed top-4 right-4 bg-green-50 border-l-4 border-green-500 p-4 rounded-lg shadow-lg max-w-md hidden z-20">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-green-800" id="success-title">Success!</h3>
+                    <p class="text-sm text-green-700 mt-1" id="success-text">Your action was completed successfully.</p>
+                </div>
+                <button id="close-success" class="ml-auto pl-3">
+                    <i class="fas fa-times text-green-500 hover:text-green-700"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="error-message" class="fixed top-4 right-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-lg shadow-lg max-w-md hidden z-20">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800" id="error-title">Error</h3>
+                    <p class="text-sm text-red-700 mt-1" id="error-text">Something went wrong. Please try again.</p>
+                </div>
+                <button id="close-error" class="ml-auto pl-3">
+                    <i class="fas fa-times text-red-500 hover:text-red-700"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-4 py-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="bg-white p-1 rounded">
+                            <i class="fas fa-home text-primary text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold font-heading">Community<span class="text-accent">Report</span></h3>
+                    </div>
+                    <p class="text-gray-300">Helping communities report and resolve issues efficiently for a better living environment.</p>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4 font-heading">Quick Links</h4>
+                    <ul id="footer-links" class="space-y-2"></ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4 font-heading">Issue Categories</h4>
+                    <ul id="category-links" class="space-y-2"></ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-4 font-heading">Contact Us</h4>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <i class="fas fa-envelope text-accent mr-2"></i>
+                            <span>support@communityreport.org</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-phone text-accent mr-2"></i>
+                            <span>+1 (555) 123-4567</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-map-marker-alt text-accent mr-2"></i>
+                            <span>123 Community St, City</span>
+                        </li>
+                    </ul>
+                    <div class="mt-4 flex space-x-4">
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="text-gray-300 hover:text-white"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>&copy; 2023 Smart Community Issue Reporting System. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Data and Logic -->
+    <script>
+        // ========== DATA LAYER ==========
+        // Navigation items
+        const navigationItems = [
+            { "id": "home", "label": "Home", "icon": "fas fa-home", "requiresAuth": false },
+            { "id": "report", "label": "Report Issue", "icon": "fas fa-plus-circle", "requiresAuth": true },
+            { "id": "issues", "label": "View Issues", "icon": "fas fa-list-alt", "requiresAuth": true },
+            { "id": "about", "label": "About", "icon": "fas fa-info-circle", "requiresAuth": false }
+        ];
+
+        // Issue categories
+        const issueCategories = [
+            { "id": "electricity", "label": "Electricity", "icon": "fas fa-bolt", "color": "bg-blue-100", "textColor": "text-blue-800" },
+            { "id": "water", "label": "Water", "icon": "fas fa-tint", "color": "bg-green-100", "textColor": "text-green-800" },
+            { "id": "waste", "label": "Waste", "icon": "fas fa-trash-alt", "color": "bg-yellow-100", "textColor": "text-yellow-800" },
+            { "id": "potholes", "label": "Potholes", "icon": "fas fa-road", "color": "bg-red-100", "textColor": "text-red-800" }
+        ];
+
+        // Footer links
+        const footerLinks = [
+            { "label": "Privacy Policy", "href": "#privacy" },
+            { "label": "Terms of Service", "href": "#terms" },
+            { "label": "FAQ", "href": "#faq" },
+            { "label": "Contact Support", "href": "#contact" }
+        ];
+
+        // Sample issues data (in a real app, this would come from a backend)
+        let issuesData = [
+            { 
+                "id": 1, 
+                "title": "Street Light Out on Maple Street", 
+                "description": "The street light at the corner of Maple Street and 5th Avenue has been out for 3 days, making it dangerous for pedestrians at night.", 
+                "category": "electricity", 
+                "location": "Maple Street & 5th Avenue", 
+                "status": "pending", 
+                "priority": "medium",
+                "date": "2023-10-15",
+                "reportedBy": "John Smith",
+                "updates": []
+            },
+            { 
+                "id": 2, 
+                "title": "Water Leak at Community Park", 
+                "description": "There's a significant water leak near the playground in Community Park. Water is pooling and creating a muddy area.", 
+                "category": "water", 
+                "location": "Community Park, near playground", 
+                "status": "inprogress", 
+                "priority": "high",
+                "date": "2023-10-12",
+                "reportedBy": "Maria Garcia",
+                "updates": ["Issue confirmed by maintenance team", "Repair scheduled for Oct 18"]
+            },
+            { 
+                "id": 3, 
+                "title": "Missed Garbage Collection", 
+                "description": "Garbage was not collected on Oak Street this week. Bins are overflowing and attracting pests.", 
+                "category": "waste", 
+                "location": "Oak Street, between 2nd and 3rd Ave", 
+                "status": "resolved", 
+                "priority": "medium",
+                "date": "2023-10-08",
+                "reportedBy": "Robert Johnson",
+                "updates": ["Report forwarded to waste management", "Special collection completed on Oct 10"]
+            },
+            { 
+                "id": 4, 
+                "title": "Large Pothole on Main Road", 
+                "description": "A large pothole has formed on Main Road near the shopping center. It's damaging vehicles and is a safety hazard.", 
+                "category": "potholes", 
+                "location": "Main Road, near City Mall entrance", 
+                "status": "inprogress", 
+                "priority": "high",
+                "date": "2023-10-10",
+                "reportedBy": "Sarah Williams",
+                "updates": ["Temporary warning signs placed", "Repair scheduled for next week"]
+            },
+            { 
+                "id": 5, 
+                "title": "Broken Water Fountain", 
+                "description": "The public water fountain at Central Square is broken and leaking water continuously.", 
+                "category": "water", 
+                "location": "Central Square", 
+                "status": "pending", 
+                "priority": "low",
+                "date": "2023-10-14",
+                "reportedBy": "David Brown",
+                "updates": []
+            }
+        ];
+
+        // User data (simulated)
+        let currentUser = null;
+        let users = [
+            { "id": 1, "firstName": "Admin", "lastName": "User", "email": "admin@test.com", "password": "admin123", "isAdmin": true },
+            { "id": 2, "firstName": "John", "lastName": "Doe", "email": "john@test.com", "password": "john123", "isAdmin": false }
+        ];
+
+        // ========== RENDER FUNCTIONS ==========
+        // Render navigation items
+        function renderNavItems(items, containerId, isMobile = false) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const filteredItems = items.filter(item => {
+                if (item.requiresAuth && !currentUser) return false;
+                return true;
+            });
+            
+            const html = filteredItems.map(item => {
+                const activeClass = getCurrentPage() === item.id ? 'text-primary font-semibold' : 'text-gray-600 hover:text-primary';
+                const mobileClass = isMobile ? 'block py-2 px-4 hover:bg-gray-100 rounded' : '';
+                
+                return `<li>
+                    <a href="#" data-page="${item.id}" class="${activeClass} ${mobileClass} flex items-center ${isMobile ? '' : 'transition-colors duration-200'}">
+                        ${item.icon ? `<i class="${item.icon} mr-2"></i>` : ''}
+                        ${item.label}
+                    </a>
+                </li>`;
+            }).join("");
+            
+            container.innerHTML = html;
+            
+            // Add event listeners to navigation links
+            const links = container.querySelectorAll('a[data-page]');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    navigateToPage(pageId);
+                });
+            });
+        }
+
+        // Render issue categories as buttons
+        function renderCategoryButtons(containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const html = issueCategories.map(category => {
+                return `<button type="button" data-category="${category.id}" class="category-btn flex flex-col items-center justify-center p-4 border rounded-lg hover:border-primary hover:bg-blue-50 transition-colors duration-200">
+                    <div class="${category.color} ${category.textColor} w-12 h-12 rounded-full flex items-center justify-center mb-2">
+                        <i class="${category.icon} text-xl"></i>
+                    </div>
+                    <span class="font-medium">${category.label}</span>
+                </button>`;
+            }).join("");
+            
+            container.innerHTML = html;
+            
+            // Add event listeners to category buttons
+            const buttons = container.querySelectorAll('.category-btn');
+            let selectedCategory = 'electricity';
+            
+            buttons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove selected class from all buttons
+                    buttons.forEach(btn => {
+                        btn.classList.remove('border-primary', 'bg-blue-50', 'ring-2', 'ring-primary', 'ring-opacity-50');
+                        btn.classList.add('border-gray-300');
+                    });
+                    
+                    // Add selected class to clicked button
+                    this.classList.remove('border-gray-300');
+                    this.classList.add('border-primary', 'bg-blue-50', 'ring-2', 'ring-primary', 'ring-opacity-50');
+                    
+                    selectedCategory = this.getAttribute('data-category');
+                    document.getElementById('issue-form').dataset.category = selectedCategory;
+                });
+            });
+            
+            // Select first category by default
+            if (buttons.length > 0) {
+                buttons[0].click();
+            }
+        }
+
+        // Render issues list
+        function renderIssues(issues, containerId) {
+            const container = document.getElementById(containerId);
+            const noIssuesMessage = document.getElementById('no-issues-message');
+            
+            if (!container) return;
+            
+            if (issues.length === 0) {
+                container.innerHTML = '';
+                noIssuesMessage.classList.remove('hidden');
+                return;
+            }
+            
+            noIssuesMessage.classList.add('hidden');
+            
+            const html = issues.map(issue => {
+                const category = issueCategories.find(cat => cat.id === issue.category);
+                const statusClass = `status-${issue.status}`;
+                const statusText = issue.status.charAt(0).toUpperCase() + issue.status.slice(1);
+                const priorityColors = {
+                    'low': 'bg-gray-100 text-gray-800',
+                    'medium': 'bg-yellow-100 text-yellow-800',
+                    'high': 'bg-orange-100 text-orange-800',
+                    'urgent': 'bg-red-100 text-red-800'
+                };
+                const priorityText = issue.priority.charAt(0).toUpperCase() + issue.priority.slice(1);
+                
+                return `<div class="bg-white rounded-xl p-6 card-shadow">
+                    <div class="flex flex-col md:flex-row md:items-start justify-between mb-4">
+                        <div class="flex-1">
+                            <div class="flex items-center mb-2">
+                                <div class="${category.color} ${category.textColor} w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                                    <i class="${category.icon}"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800">${issue.title}</h3>
+                                    <div class="flex flex-wrap items-center gap-2 mt-1">
+                                        <span class="px-3 py-1 rounded-full text-sm font-medium ${statusClass}">${statusText}</span>
+                                        <span class="px-3 py-1 rounded-full text-sm font-medium ${priorityColors[issue.priority]}">${priorityText} Priority</span>
+                                        <span class="text-gray-500 text-sm"><i class="far fa-calendar mr-1"></i>${issue.date}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mb-4">${issue.description}</p>
+                            <div class="flex items-center text-gray-700">
+                                <i class="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                                <span>${issue.location}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 md:mt-0 md:ml-4 flex space-x-2">
+                            ${currentUser && currentUser.isAdmin ? `
+                            <button class="edit-issue-btn px-4 py-2 border border-primary text-primary rounded-lg hover:bg-blue-50" data-id="${issue.id}">
+                                <i class="fas fa-edit mr-1"></i> Edit
+                            </button>
+                            <button class="update-status-btn px-4 py-2 bg-primary text-white rounded-lg hover:bg-secondary" data-id="${issue.id}">
+                                <i class="fas fa-sync-alt mr-1"></i> Update
+                            </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    ${issue.updates && issue.updates.length > 0 ? `
+                    <div class="border-t pt-4 mt-4">
+                        <h4 class="font-bold text-gray-700 mb-2">Updates</h4>
+                        <ul class="space-y-2">
+                            ${issue.updates.map(update => `<li class="flex items-start">
+                                <i class="fas fa-circle text-xs text-primary mt-2 mr-3"></i>
+                                <span class="text-gray-600">${update}</span>
+                            </li>`).join("")}
+                        </ul>
+                    </div>
+                    ` : ''}
+                    
+                    <div class="flex justify-between items-center mt-4 pt-4 border-t">
+                        <div class="text-sm text-gray-500">
+                            Reported by: <span class="font-medium">${issue.reportedBy}</span>
+                        </div>
+                        <div class="text-sm text-gray-500">
+                            Issue ID: <span class="font-mono">#${issue.id.toString().padStart(4, '0')}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join("");
+            
+            container.innerHTML = html;
+            
+            // Add event listeners to issue action buttons
+            if (currentUser && currentUser.isAdmin) {
+                const editButtons = container.querySelectorAll('.edit-issue-btn');
+                const updateButtons = container.querySelectorAll('.update-status-btn');
+                
+                editButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const issueId = parseInt(this.getAttribute('data-id'));
+                        editIssue(issueId);
+                    });
+                });
+                
+                updateButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const issueId = parseInt(this.getAttribute('data-id'));
+                        updateIssueStatus(issueId);
+                    });
+                });
+            }
+        }
+
+        // Render footer links
+        function renderFooterLinks(items, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const html = items.map(item => {
+                return `<li><a href="${item.href}" class="text-gray-300 hover:text-white transition-colors duration-200">${item.label}</a></li>`;
+            }).join("");
+            
+            container.innerHTML = html;
+        }
+
+        // Render category links in footer
+        function renderCategoryLinks(categories, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            const html = categories.map(category => {
+                return `<li><a href="#" data-page="report" data-category="${category.id}" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center">
+                    <i class="${category.icon} mr-2 text-accent"></i>
+                    ${category.label} Issues
+                </a></li>`;
+            }).join("");
+            
+            container.innerHTML = html;
+            
+            // Add event listeners to category links
+            const links = container.querySelectorAll('a[data-page]');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    const category = this.getAttribute('data-category');
+                    
+                    navigateToPage(pageId);
+                    
+                    // Set the category on the report form
+                    setTimeout(() => {
+                        const categoryButtons = document.querySelectorAll('.category-btn');
+                        categoryButtons.forEach(button => {
+                            if (button.getAttribute('data-category') === category) {
+                                button.click();
+                            }
+                        });
+                    }, 100);
+                });
+            });
+        }
+
+        // ========== UTILITY FUNCTIONS ==========
+        // Get current page from URL hash or default to 'home'
+        function getCurrentPage() {
+            const hash = window.location.hash.substring(1);
+            return hash || 'home';
+        }
+
+        // Navigate to a specific page
+        function navigateToPage(pageId) {
+            // Hide all pages
+            const pages = document.querySelectorAll('main > section');
+            pages.forEach(page => {
+                page.classList.remove('visible-page');
+                page.classList.add('hidden-page');
+            });
+            
+            // Show the requested page
+            const targetPage = document.getElementById(`${pageId}-page`);
+            if (targetPage) {
+                targetPage.classList.remove('hidden-page');
+                targetPage.classList.add('visible-page');
+                
+                // Update URL hash
+                window.location.hash = pageId;
+                
+                // Update navigation active state
+                renderNavItems(navigationItems, 'nav-list');
+                renderNavItems(navigationItems, 'mobile-nav-list', true);
+                
+                // Load data for specific pages
+                if (pageId === 'issues') {
+                    filterAndRenderIssues();
+                }
+                
+                // Close mobile menu if open
+                document.getElementById('mobile-menu').classList.add('hidden');
+            }
+        }
+
+        // Show success message
+        function showSuccess(title, message) {
+            document.getElementById('success-title').textContent = title;
+            document.getElementById('success-text').textContent = message;
+            document.getElementById('success-message').classList.remove('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('success-message').classList.add('hidden');
+            }, 5000);
+        }
+
+        // Show error message
+        function showError(title, message) {
+            document.getElementById('error-title').textContent = title;
+            document.getElementById('error-text').textContent = message;
+            document.getElementById('error-message').classList.remove('hidden');
+            
+            setTimeout(() => {
+                document.getElementById('error-message').classList.add('hidden');
+            }, 5000);
+        }
+
+        // Update user interface based on authentication state
+        function updateAuthUI() {
+            const userInfo = document.getElementById('user-info');
+            const authButtons = document.getElementById('auth-buttons');
+            const logoutBtn = document.getElementById('logout-btn');
+            const userAvatar = document.getElementById('user-avatar');
+            const usernameDisplay = document.getElementById('username-display');
+            
+            if (currentUser) {
+                // User is logged in
+                userInfo.classList.remove('hidden');
+                authButtons.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                
+                // Set user info
+                const initials = (currentUser.firstName.charAt(0) + currentUser.lastName.charAt(0)).toUpperCase();
+                userAvatar.textContent = initials;
+                usernameDisplay.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+                
+                // Update navigation to show protected pages
+                renderNavItems(navigationItems, 'nav-list');
+                renderNavItems(navigationItems, 'mobile-nav-list', true);
+            } else {
+                // User is not logged in
+                userInfo.classList.add('hidden');
+                authButtons.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                
+                // Update navigation to hide protected pages
+                renderNavItems(navigationItems, 'nav-list');
+                renderNavItems(navigationItems, 'mobile-nav-list', true);
+                
+                // If on a protected page, redirect to home
+                const currentPage = getCurrentPage();
+                const currentPageItem = navigationItems.find(item => item.id === currentPage);
+                if (currentPageItem && currentPageItem.requiresAuth) {
+                    navigateToPage('home');
+                }
+            }
+        }
+
+        // Filter and render issues based on selected filters
+        function filterAndRenderIssues() {
+            const statusFilter = document.getElementById('filter-status').value;
+            const categoryFilter = document.getElementById('filter-category').value;
+            
+            let filteredIssues = issuesData;
+            
+            // Apply status filter
+            if (statusFilter !== 'all') {
+                filteredIssues = filteredIssues.filter(issue => issue.status === statusFilter);
+            }
+            
+            // Apply category filter
+            if (categoryFilter !== 'all') {
+                filteredIssues = filteredIssues.filter(issue => issue.category === categoryFilter);
+            }
+            
+            // If user is not admin, only show their issues
+            if (currentUser && !currentUser.isAdmin) {
+                filteredIssues = filteredIssues.filter(issue => 
+                    issue.reportedBy === `${currentUser.firstName} ${currentUser.lastName}`
+                );
+            }
+            
+            renderIssues(filteredIssues, 'issues-container');
+        }
+
+        // Submit a new issue
+        function submitIssue(event) {
+            event.preventDefault();
+            
+            if (!currentUser) {
+                showError('Authentication Required', 'Please log in to report an issue.');
+                navigateToPage('login');
+                return;
+            }
+            
+            const title = document.getElementById('issue-title').value;
+            const description = document.getElementById('issue-description').value;
+            const location = document.getElementById('issue-location').value;
+            const priority = document.getElementById('issue-priority').value;
+            const category = document.getElementById('issue-form').dataset.category || 'electricity';
+            
+            // Create new issue
+            const newIssue = {
+                id: issuesData.length > 0 ? Math.max(...issuesData.map(i => i.id)) + 1 : 1,
+                title: title,
+                description: description,
+                category: category,
+                location: location,
+                status: 'pending',
+                priority: priority,
+                date: new Date().toISOString().split('T')[0],
+                reportedBy: `${currentUser.firstName} ${currentUser.lastName}`,
+                updates: []
+            };
+            
+            // Add to issues data
+            issuesData.unshift(newIssue);
+            
+            // Reset form
+            document.getElementById('issue-form').reset();
+            
+            // Show success message
+            showSuccess('Issue Reported', 'Your issue has been submitted successfully. You can track its status in the View Issues page.');
+            
+            // Navigate to issues page
+            navigateToPage('issues');
+        }
+
+        // Edit an issue (admin only)
+        function editIssue(issueId) {
+            const issue = issuesData.find(i => i.id === issueId);
+            if (!issue) return;
+            
+            // In a real app, this would open an edit form
+            // For this demo, we'll just show a message
+            showSuccess('Edit Issue', `Editing issue #${issueId}: ${issue.title}. In a full implementation, this would open an edit form.`);
+        }
+
+        // Update issue status (admin only)
+        function updateIssueStatus(issueId) {
+            const issue = issuesData.find(i => i.id === issueId);
+            if (!issue) return;
+            
+            // Cycle through statuses: pending -> inprogress -> resolved -> pending
+            const statusOrder = ['pending', 'inprogress', 'resolved'];
+            const currentIndex = statusOrder.indexOf(issue.status);
+            const nextIndex = (currentIndex + 1) % statusOrder.length;
+            const newStatus = statusOrder[nextIndex];
+            
+            // Update issue status
+            issue.status = newStatus;
+            
+            // Add update note
+            const statusText = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+            const updateNote = `Status changed to ${statusText} on ${new Date().toISOString().split('T')[0]}`;
+            issue.updates.push(updateNote);
+            
+            // Re-render issues
+            filterAndRenderIssues();
+            
+            // Show success message
+            showSuccess('Status Updated', `Issue #${issueId} status changed to ${statusText}.`);
+        }
+
+        // Handle login
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Find user
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Login successful
+                currentUser = {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    email: user.email,
+                    isAdmin: user.isAdmin || false
+                };
+                
+                // Save to localStorage (simulated)
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                
+                // Update UI
+                updateAuthUI();
+                
+                // Show success message
+                showSuccess('Login Successful', `Welcome back, ${user.firstName}!`);
+                
+                // Navigate to home page
+                navigateToPage('home');
+                
+                // Reset form
+                document.getElementById('login-form').reset();
+            } else {
+                // Login failed
+                showError('Login Failed', 'Invalid email or password. Please try again.');
+            }
+        }
+
+        // Handle registration
+        function handleRegister(event) {
+            event.preventDefault();
+            
+            const firstName = document.getElementById('register-firstname').value;
+            const lastName = document.getElementById('register-lastname').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            // Validation
+            if (password !== confirmPassword) {
+                showError('Registration Failed', 'Passwords do not match. Please try again.');
+                return;
+            }
+            
+            if (password.length < 8) {
+                showError('Registration Failed', 'Password must be at least 8 characters long.');
+                return;
+            }
+            
+            // Check if user already exists
+            const existingUser = users.find(u => u.email === email);
+            if (existingUser) {
+                showError('Registration Failed', 'An account with this email already exists.');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                password: password,
+                isAdmin: false
+            };
+            
+            // Add to users array
+            users.push(newUser);
+            
+            // Auto-login the new user
+            currentUser = {
+                id: newUser.id,
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
+                email: newUser.email,
+                isAdmin: newUser.isAdmin
+            };
+            
+            // Save to localStorage (simulated)
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            
+            // Update UI
+            updateAuthUI();
+            
+            // Show success message
+            showSuccess('Registration Successful', `Welcome to CommunityReport, ${firstName}! Your account has been created.`);
+            
+            // Navigate to home page
+            navigateToPage('home');
+            
+            // Reset form
+            document.getElementById('register-form').reset();
+        }
+
+        // Handle logout
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            updateAuthUI();
+            showSuccess('Logged Out', 'You have been successfully logged out.');
+            navigateToPage('home');
+        }
+
+        // ========== INITIALIZATION ==========
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved user in localStorage
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                try {
+                    currentUser = JSON.parse(savedUser);
+                } catch (e) {
+                    currentUser = null;
+                }
+            }
+            
+            // Initialize UI
+            updateAuthUI();
+            
+            // Render all components
+            renderNavItems(navigationItems, 'nav-list');
+            renderNavItems(navigationItems, 'mobile-nav-list', true);
+            renderCategoryButtons('category-buttons');
+            renderFooterLinks(footerLinks, 'footer-links');
+            renderCategoryLinks(issueCategories, 'category-links');
+            
+            // Set initial page based on URL hash
+            const initialPage = getCurrentPage();
+            navigateToPage(initialPage);
+            
+            // ========== EVENT LISTENERS ==========
+            // Navigation
+            document.getElementById('menu-toggle').addEventListener('click', function() {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            });
+            
+            // Auth buttons
+            document.getElementById('login-btn').addEventListener('click', function() {
+                navigateToPage('login');
+            });
+            
+            document.getElementById('register-btn').addEventListener('click', function() {
+                navigateToPage('register');
+            });
+            
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            
+            // Form submissions
+            document.getElementById('issue-form').addEventListener('submit', submitIssue);
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('register-form').addEventListener('submit', handleRegister);
+            
+            // Cancel report button
+            document.getElementById('cancel-report').addEventListener('click', function() {
+                if (confirm('Are you sure you want to cancel? Your form data will be lost.')) {
+                    document.getElementById('issue-form').reset();
+                    navigateToPage('home');
+                }
+            });
+            
+            // Get started button
+            document.getElementById('get-started-btn').addEventListener('click', function() {
+                if (currentUser) {
+                    navigateToPage('report');
+                } else {
+                    navigateToPage('register');
+                }
+            });
+            
+            // Report first issue button
+            document.getElementById('report-first-issue').addEventListener('click', function() {
+                if (currentUser) {
+                    navigateToPage('report');
+                } else {
+                    navigateToPage('login');
+                }
+            });
+            
+            // Issue filters
+            document.getElementById('filter-status').addEventListener('change', filterAndRenderIssues);
+            document.getElementById('filter-category').addEventListener('change', filterAndRenderIssues);
+            
+            // Auth navigation
+            document.getElementById('go-to-register').addEventListener('click', function() {
+                navigateToPage('register');
+            });
+            
+            document.getElementById('go-to-login').addEventListener('click', function() {
+                navigateToPage('login');
+            });
+            
+            // Close message buttons
+            document.getElementById('close-success').addEventListener('click', function() {
+                document.getElementById('success-message').classList.add('hidden');
+            });
+            
+            document.getElementById('close-error').addEventListener('click', function() {
+                document.getElementById('error-message').classList.add('hidden');
+            });
+            
+            // Handle hash changes (browser back/forward buttons)
+            window.addEventListener('hashchange', function() {
+                const page = getCurrentPage();
+                navigateToPage(page);
+            });
+            
+            // Prevent default behavior for all anchor tags
+            document.addEventListener('click', function(event) {
+                const anchor = event.target.closest('a');
+                if (anchor && anchor.getAttribute('href') && anchor.getAttribute('href').startsWith('#')) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
